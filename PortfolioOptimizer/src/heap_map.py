@@ -269,80 +269,83 @@
 #         print(f"Heap map graph saved as {filepath}")
 #         plt.show()
 
-import numpy as np
-import os
-import matplotlib.pyplot as plt
-import yfinance as yf
-import heapq
-import squarify  # Install this with `pip install squarify`
-import networkx as nx
+# import numpy as np
+# import os
+# import matplotlib.pyplot as plt
+# import yfinance as yf
+# import heapq
+# import squarify  # Install this with `pip install squarify`
+# import networkx as nx
 
 
-class HeapMap:
-    def __init__(self, portfolio_values, asset_names):
-        if portfolio_values.ndim != 3:
-            raise ValueError(f"Expected a 3D array for portfolio_values, got {portfolio_values.ndim}D")
-        if len(asset_names) != portfolio_values.shape[2]:
-            raise ValueError("Asset names must match the last dimension of portfolio_values.")
-        self.portfolio_values = portfolio_values
-        self.asset_names = asset_names
+# class HeapMap:
+#     def __init__(self, portfolio_values, asset_names):
+#         if portfolio_values.ndim != 3:
+#             raise ValueError(f"Expected a 3D array for portfolio_values, got {portfolio_values.ndim}D")
+#         if len(asset_names) != portfolio_values.shape[2]:
+#             raise ValueError("Asset names must match the last dimension of portfolio_values.")
+#         self.portfolio_values = portfolio_values
+#         self.asset_names = asset_names
 
-    def calculate_asset_risks(self):
-        asset_values = self.portfolio_values.transpose(2, 0, 1)
-        risks = []
+#     def calculate_asset_risks(self):
+#         asset_values = self.portfolio_values.transpose(2, 0, 1)
+#         risks = []
 
-        for i, asset in enumerate(self.asset_names):
-            #daily_returns = np.diff(asset_values[i], axis=0) / asset_values[i][:-1]
-            daily_returns = np.diff(asset_values[i], axis=0) / asset_values[i][:-1]
-            #print(f"Asset: {asset}, Daily Returns Sample: {daily_returns[:5]}")
+#         for i, asset in enumerate(self.asset_names):
+#             #daily_returns = np.diff(asset_values[i], axis=0) / asset_values[i][:-1]
+#             daily_returns = np.diff(asset_values[i], axis=0) / asset_values[i][:-1]
+#             #print(f"Asset: {asset}, Daily Returns Sample: {daily_returns[:5]}")
 
-            #risk = np.std(daily_returns)
-            risk = np.std(daily_returns) + np.abs(np.mean(daily_returns))  # Combines volatility and average return
-            print(f"Asset: {asset}, Daily Returns Sample: {daily_returns[:5]}")
-            risks.append((risk, asset))
+#             #risk = np.std(daily_returns)
+#             risk = np.std(daily_returns) + np.abs(np.mean(daily_returns))  # Combines volatility and average return
+#             print(f"Asset: {asset}, Daily Returns Sample: {daily_returns[:5]}")
+#             risks.append((risk, asset))
 
-        return risks
+#         return risks
 
-    def generate_heap(self):
-        asset_risks = self.calculate_asset_risks()
-        max_heap = [(-risk, asset) for risk, asset in asset_risks]
-        heapq.heapify(max_heap)
-        return max_heap
+#     def generate_heap(self):
+#         """Generate a heap based on asset risks."""
+#         asset_risks = self.calculate_asset_risks()
+#         max_heap = [(-risk, asset) for risk, asset in asset_risks]
+#         heapq.heapify(max_heap)
+#         return max_heap
 
-    def display_heap(self, heap):
-        print("Heap Map: Areas of Higher Portfolio Risk")
-        print("-" * 50)
-        for neg_risk, asset in heap:
-            print(f"Asset: {asset}, Risk: {-neg_risk:.4f}")
+#     def display_heap(self, heap):
+#         print("Heap Map: Areas of Higher Portfolio Risk")
+#         print("-" * 50)
+#         for neg_risk, asset in heap:
+#             print(f"Asset: {asset}, Risk: {-neg_risk:.4f}")
 
-    def export_treemap(self, heap, filename="heap_treemap.png"):
-        """
-        Exports a treemap visualization of the heap.
-        """
-        os.makedirs("graphs", exist_ok=True)
-        filepath = os.path.join("graphs", filename)
 
-        # Extract data from the heap
-        risks = [-risk for risk, asset in heap]
-        assets = [asset for risk, asset in heap]
 
-        # Normalize risks for treemap sizing
-        total_risk = sum(risks)
-        sizes = [risk / total_risk for risk in risks]
+#     def export_treemap(self, heap, filename="heap_treemap.png"):
+#         """
+#         Exports a treemap visualization of the heap.
+#         """
+#         os.makedirs("graphs", exist_ok=True)
+#         filepath = os.path.join("graphs", filename)
 
-        # Plot treemap
-        plt.figure(figsize=(10, 6))
-        squarify.plot(
-            sizes=sizes,
-            label=[f"{asset}\nRisk: {risk:.4f}" for asset, risk in zip(assets, risks)],
-            color=plt.cm.viridis(sizes),  # Color based on size
-            alpha=0.7
-        )
-        plt.axis("off")
-        plt.title("Asset Risks Treemap", fontsize=18)
-        plt.savefig(filepath)
-        print(f"Treemap graph saved as {filepath}")
-        plt.show()
+#         # Extract data from the heap
+#         risks = [-risk for risk, asset in heap]
+#         assets = [asset for risk, asset in heap]
+
+#         # Normalize risks for treemap sizing
+#         total_risk = sum(risks)
+#         sizes = [risk / total_risk for risk in risks]
+
+#         # Plot treemap
+#         plt.figure(figsize=(10, 6))
+#         squarify.plot(
+#             sizes=sizes,
+#             label=[f"{asset}\nRisk: {risk:.4f}" for asset, risk in zip(assets, risks)],
+#             color=plt.cm.viridis(sizes),  # Color based on size
+#             alpha=0.7
+#         )
+#         plt.axis("off")
+#         plt.title("Asset Risks Treemap", fontsize=18)
+#         plt.savefig(filepath)
+#         print(f"Treemap graph saved as {filepath}")
+#         plt.show()
 
     # def export_heap_tree(self, heap, filename="heap_tree.png"):
     #     """
@@ -384,42 +387,206 @@ class HeapMap:
     #     print(f"Heap tree graph saved as {filepath}")
     #     plt.show()
 
-    def export_heap_tree(self, heap, filename="heap_tree.png"):
+    # def export_heap_tree(self, heap, filename="heap_tree.png"):
+    #     """
+    #     Exports a tree visualization of the heap using spring layout.
+    #     """
+    #     os.makedirs("graphs", exist_ok=True)
+    #     filepath = os.path.join("graphs", filename)
+
+    #     G = nx.DiGraph()  # Directed graph for heap
+
+    #     # Create a binary tree from the heap
+    #     for i, (neg_risk, asset) in enumerate(heap):
+    #         G.add_node(i, label=f"{asset}\nRisk: {-neg_risk:.4f}")
+    #         left = 2 * i + 1
+    #         right = 2 * i + 2
+    #     if left < len(heap):
+    #         G.add_edge(i, left)
+    #     if right < len(heap):
+    #         G.add_edge(i, right)
+
+    #     # Use spring layout (no external dependencies required)
+    #     pos = nx.spring_layout(G, seed=42)
+    #     labels = nx.get_node_attributes(G, "label")
+
+    #     plt.figure(figsize=(12, 8))
+    #     nx.draw(
+    #         G,
+    #         pos,
+    #         labels=labels,
+    #         with_labels=True,
+    #         node_size=2000,
+    #         node_color="lightblue",
+    #         font_size=8,
+    #         font_weight="bold",
+    #         arrows=False,
+    #     )
+    #     plt.title("Heap Tree Visualization", fontsize=18)
+    #     plt.savefig(filepath)
+    #     print(f"Heap tree graph saved as {filepath}")
+    #     plt.show()
+
+
+
+# import numpy as np
+# import os
+# import matplotlib.pyplot as plt
+# import yfinance as yf
+# import heapq
+# import squarify  # Install this with `pip install squarify`
+# import networkx as nx
+
+
+# class HeapMap:
+#     def __init__(self, portfolio_values, asset_names):
+#         if portfolio_values.ndim != 3:
+#             raise ValueError(f"Expected a 3D array for portfolio_values, got {portfolio_values.ndim}D")
+#         if len(asset_names) != portfolio_values.shape[2]:
+#             raise ValueError("Asset names must match the last dimension of portfolio_values.")
+#         self.portfolio_values = portfolio_values
+#         self.asset_names = asset_names
+#         #self.sp500_tickers = self.get_sp500_tickers()
+
+#     # def get_sp500_tickers(self):
+#     #     """Fetch the list of S&P 500 tickers."""
+#     #     # You can replace this section with a locally stored list or other reliable methods
+#     #     try:
+#     #         sp500_table = yf.Ticker("^GSPC").history(period="1d")
+#     #         sp500_tickers = [ticker.strip() for ticker in sp500_table.index]
+#     #     except Exception as e:
+#     #         print("Failed to fetch S&P 500 tickers. Ensure internet connection or use a static list.")
+#     #         sp500_tickers = []  # Fallback to an empty list
+#     #     return sp500_tickers
+
+#     def calculate_asset_risks(self):
+#         asset_values = self.portfolio_values.transpose(2, 0, 1)
+#         risks = []
+
+#         for i, asset in enumerate(self.asset_names):
+#             daily_returns = np.diff(asset_values[i], axis=0) / asset_values[i][:-1]
+#             risk = np.std(daily_returns) + np.abs(np.mean(daily_returns))  # Combines volatility and average return
+#             risks.append((risk, asset))
+
+#         return risks
+
+#     def generate_heap(self):
+#         """Generate a heap based on asset risks."""
+#         asset_risks = self.calculate_asset_risks()
+#         max_heap = [(-risk, asset) for risk, asset in asset_risks]
+#         heapq.heapify(max_heap)
+#         return max_heap
+
+#     def display_heap(self, heap):
+#         print("Heap Map: Areas of Higher Portfolio Risk")
+#         print("-" * 50)
+#         # for neg_risk, asset in heap:
+#         #     in_sp500 = "Yes" if asset in self.sp500_tickers else "No"
+#         #     print(f"Asset: {asset}, Risk: {-neg_risk:.4f}, In S&P 500: {in_sp500}")
+#         for neg_risk, asset in heap:
+#             print(f"Asset: {asset}, Risk: {-neg_risk:.4f}")
+
+#     def export_treemap(self, heap, filename="heap_treemap.png"):
+#         """
+#         Exports a treemap visualization of the heap.
+#         """
+#         os.makedirs("graphs", exist_ok=True)
+#         filepath = os.path.join("graphs", filename)
+
+#         # Extract data from the heap
+#         risks = [-risk for risk, asset in heap]
+#         assets = [asset for risk, asset in heap]
+
+#         # Normalize risks for treemap sizing
+#         total_risk = sum(risks)
+#         sizes = [risk / total_risk for risk in risks]
+
+#         # Plot treemap
+#         plt.figure(figsize=(10, 6))
+#         squarify.plot(
+#             sizes=sizes,
+#             # label=[
+#             #     f"{asset}\nRisk: {risk:.4f}\nIn S&P 500: {'Yes' if asset in self.sp500_tickers else 'No'}"
+#             #     for asset, risk in zip(assets, risks)
+#             # ],
+#             label=[
+#                 f"{asset}\nRisk: {risk:.4f}\n"
+#                 for asset, risk in zip(assets, risks)
+#             ],
+#             color=plt.cm.viridis(sizes),  # Color based on size
+#             alpha=0.7
+#         )
+#         plt.axis("off")
+#         plt.title("Asset Risks Treemap", fontsize=18)
+#         plt.savefig(filepath)
+#         print(f"Treemap graph saved as {filepath}")
+#         plt.show()
+
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+import heapq
+import squarify  # Install this with `pip install squarify`
+
+
+class HeapMap:
+    def __init__(self, portfolio_values, asset_names):
+        if portfolio_values.ndim != 3:
+            raise ValueError(f"Expected a 3D array for portfolio_values, got {portfolio_values.ndim}D")
+        if len(asset_names) != portfolio_values.shape[2]:
+            raise ValueError("Asset names must match the last dimension of portfolio_values.")
+        self.portfolio_values = portfolio_values
+        self.asset_names = asset_names
+
+    def calculate_asset_risks(self):
+        asset_values = self.portfolio_values.transpose(2, 0, 1)
+        risks = []
+
+        for i, asset in enumerate(self.asset_names):
+            daily_returns = np.diff(asset_values[i], axis=0) / asset_values[i][:-1]
+            risk = np.std(daily_returns) + np.abs(np.mean(daily_returns))  # Combines volatility and average return
+            risks.append((risk, asset))
+
+        return risks
+
+    def generate_heap(self):
+        """Generate a heap based on asset risks."""
+        asset_risks = self.calculate_asset_risks()
+        max_heap = [(-risk, asset) for risk, asset in asset_risks]
+        heapq.heapify(max_heap)
+        return max_heap
+
+    def display_heap(self, heap):
+        print("Heap Map: Areas of Higher Portfolio Risk")
+        print("-" * 50)
+        for neg_risk, asset in heap:
+            print(f"Asset: {asset}, Risk: {-neg_risk:.4f}")
+
+    def export_treemap(self, heap, filename="heap_treemap.png"):
         """
-        Exports a tree visualization of the heap using spring layout.
+        Exports a treemap visualization of the heap.
         """
         os.makedirs("graphs", exist_ok=True)
         filepath = os.path.join("graphs", filename)
 
-        G = nx.DiGraph()  # Directed graph for heap
+        # Extract data from the heap
+        risks = [-risk for risk, asset in heap]
+        assets = [asset for risk, asset in heap]
 
-        # Create a binary tree from the heap
-        for i, (neg_risk, asset) in enumerate(heap):
-            G.add_node(i, label=f"{asset}\nRisk: {-neg_risk:.4f}")
-            left = 2 * i + 1
-            right = 2 * i + 2
-        if left < len(heap):
-            G.add_edge(i, left)
-        if right < len(heap):
-            G.add_edge(i, right)
+        # Normalize risks for treemap sizing
+        total_risk = sum(risks)
+        sizes = [risk / total_risk for risk in risks]
 
-        # Use spring layout (no external dependencies required)
-        pos = nx.spring_layout(G, seed=42)
-        labels = nx.get_node_attributes(G, "label")
-
-        plt.figure(figsize=(12, 8))
-        nx.draw(
-            G,
-            pos,
-            labels=labels,
-            with_labels=True,
-            node_size=2000,
-            node_color="lightblue",
-            font_size=8,
-            font_weight="bold",
-            arrows=False,
+        # Plot treemap
+        plt.figure(figsize=(10, 6))
+        squarify.plot(
+            sizes=sizes,
+            label=[f"{asset}\nRisk: {risk:.4f}" for asset, risk in zip(assets, risks)],
+            color=plt.cm.viridis(sizes),  # Color based on size
+            alpha=0.7
         )
-        plt.title("Heap Tree Visualization", fontsize=18)
+        plt.axis("off")
+        plt.title("Asset Risks Treemap", fontsize=18)
         plt.savefig(filepath)
-        print(f"Heap tree graph saved as {filepath}")
+        print(f"Treemap graph saved as {filepath}")
         plt.show()

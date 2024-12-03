@@ -127,3 +127,46 @@ class StockFetcher:
         if not portfolio:
             print("Error: No valid stock prices could be fetched.")
         return portfolio
+    
+
+    # def fetch_snp500_daily_returns(self):
+    #     """
+    #     Fetch the daily returns for the S&P 500 index (^GSPC) for the past year.
+    #     """
+    #     try:
+    #         sp500 = yf.Ticker("^GSPC")
+    #         history = sp500.history(period="1y")  # Fetch 1-year historical data
+    #         if history.empty:
+    #             raise ValueError("No historical data returned for S&P 500 (^GSPC).")
+    #         daily_returns = history['Close'].pct_change().dropna().values  # Calculate daily returns
+    #         print(f"Fetched S&P 500 daily returns for the past year.")
+    #         return daily_returns
+    #     except Exception as e:
+    #         print(f"Error fetching S&P 500 daily returns: {e}")
+    #         return None
+
+
+    def fetch_snp500_daily_returns(self, time_horizon):
+        """
+        Fetch the daily returns for the S&P 500 index (^GSPC) for the given time horizon.
+        """
+        import yfinance as yf
+
+        try:
+            sp500 = yf.Ticker("^GSPC")
+            # Fetch historical data for at least the time_horizon number of days
+            history = sp500.history(period=f"{time_horizon + 10}d")  # Fetch a bit more to account for weekends/holidays
+            if history.empty:
+                raise ValueError("No historical data returned for S&P 500 (^GSPC).")
+            
+            # Calculate daily returns
+            daily_returns = history['Close'].pct_change().dropna().values
+
+            # Ensure the length matches the time_horizon
+            if len(daily_returns) < time_horizon:
+                raise ValueError("Insufficient data for S&P 500 to match the time horizon.")
+            return daily_returns[:time_horizon]
+        except Exception as e:
+            print(f"Error fetching S&P 500 daily returns: {e}")
+            return None
+    
