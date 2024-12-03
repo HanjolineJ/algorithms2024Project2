@@ -146,27 +146,90 @@ class StockFetcher:
     #         return None
 
 
+    # def fetch_snp500_daily_returns(self, time_horizon):
+    #     """
+    #     Fetch the daily returns for the S&P 500 index (^GSPC) for the given time horizon.
+    #     """
+    #     import yfinance as yf
+    #     import numpy as np
+    #     try:
+    #         # # Use '1y' as the period and then slice the returns
+    #         # periods = ['max', '10y', '5y', '2y', '1y']
+    #         # for period in periods:
+    #         #     sp500 = yf.Ticker("^GSPC")
+    #         #     history = sp500.history(period=period)
+    #         #     if not history.empty:
+    #         #         break
+    #         sp500 = yf.Ticker("^GSPC")
+    #         history = sp500.history(period="2y")  # Fetch 1 year of historical data
+        
+    #         if history.empty:
+    #             raise ValueError("No historical data returned for S&P 500 (^GSPC).")
+        
+    #         # Calculate daily returns
+    #         daily_returns = history['Close'].pct_change().dropna().values
+        
+    #         # Ensure the length matches the time_horizon
+    #         if len(daily_returns) < time_horizon:
+    #             #return daily_returns[-time_horizon:]
+            
+    #             raise ValueError(f"Could not fetch sufficient S&P 500 data for {time_horizon} days")
+        
+    #         return daily_returns[-time_horizon:]  # Return the most recent returns
+    #     except Exception as e:
+    #         print(f"Error fetching S&P 500 daily returns: {e}")
+    #         print(f"Generating s&p 500 returns")
+    #         #return np.random.normal(0.0001, 0.02, time_horizon)
+    #         return np.random.normal(0.0005, 0.01, time_horizon)
+
+    # def fetch_snp500_daily_returns(self, time_horizon):
+    #     """
+    #     Fetch the daily returns for the S&P 500 index (^GSPC) for the given time horizon.
+    #     """
+    #     import yfinance as yf
+
+    #     try:
+    #         sp500 = yf.Ticker("^GSPC")
+    #         # Fetch historical data for at least the time_horizon number of days
+    #         history = sp500.history(period=f"{time_horizon + 10}d")  # Fetch a bit more to account for weekends/holidays
+    #         if history.empty:
+    #             raise ValueError("No historical data returned for S&P 500 (^GSPC).")
+            
+    #         # Calculate daily returns
+    #         daily_returns = history['Close'].pct_change().dropna().values
+
+    #         # Ensure the length matches the time_horizon
+    #         if len(daily_returns) < time_horizon:
+    #             raise ValueError("Insufficient data for S&P 500 to match the time horizon.")
+    #         return daily_returns[:time_horizon]
+    #     except Exception as e:
+    #         print(f"Error fetching S&P 500 daily returns: {e}")
+    #         return None
     def fetch_snp500_daily_returns(self, time_horizon):
         """
         Fetch the daily returns for the S&P 500 index (^GSPC) for the given time horizon.
         """
         import yfinance as yf
+        import numpy as np
 
         try:
             sp500 = yf.Ticker("^GSPC")
-            # Fetch historical data for at least the time_horizon number of days
-            history = sp500.history(period=f"{time_horizon + 10}d")  # Fetch a bit more to account for weekends/holidays
+            history = sp500.history(period="2y")  # Fetch at least 2 years of data to cover weekends/holidays
             if history.empty:
                 raise ValueError("No historical data returned for S&P 500 (^GSPC).")
-            
-            # Calculate daily returns
+        
+            # Calculate daily percentage returns
             daily_returns = history['Close'].pct_change().dropna().values
-
+        
             # Ensure the length matches the time_horizon
             if len(daily_returns) < time_horizon:
-                raise ValueError("Insufficient data for S&P 500 to match the time horizon.")
-            return daily_returns[:time_horizon]
+                raise ValueError(f"Not enough S&P 500 data for the specified time horizon ({time_horizon} days).")
+        
+            # Return the last `time_horizon` daily returns
+            return daily_returns[-time_horizon:]
         except Exception as e:
             print(f"Error fetching S&P 500 daily returns: {e}")
-            return None
-    
+            print("Generating simulated S&P 500 daily returns.")
+            # Generate fallback random returns
+            return np.random.normal(0.0005, 0.01, time_horizon)
+

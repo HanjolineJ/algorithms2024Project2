@@ -334,7 +334,7 @@ if __name__ == "__main__":
     if portfolio_prices:
         simulator = MonteCarloSimulator(portfolio_prices, initial_investment)
         time_horizon = 365
-        portfolio_values = simulator.simulate(time_horizon=time_horizon)
+        portfolio_values = simulator.simulate(num_simulations=500, time_horizon=time_horizon)
 
         if portfolio_values is not None:
             simulator.export_simulation_graph(portfolio_values)
@@ -343,8 +343,9 @@ if __name__ == "__main__":
             sp500_returns = fetcher.fetch_snp500_daily_returns(time_horizon)  # This method should return daily S&P 500 returns as a numpy array
             
             # Export comparison graph (Monte Carlo vs S&P 500)
-        if sp500_returns is not None:
-            simulator.export_simulation_with_sp500_graph(portfolio_values, sp500_returns)
+            if sp500_returns is not None:
+                print (f"SP500 : {sp500_returns}")
+                simulator.export_simulation_with_sp500_graph(portfolio_values, sp500_returns)
 
 
             risk_metrics = RiskMetrics(portfolio_values)

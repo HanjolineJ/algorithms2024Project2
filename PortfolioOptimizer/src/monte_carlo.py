@@ -467,71 +467,29 @@ class MonteCarloSimulator:
         print(f"Simulation graph saved as {filepath}")
         plt.show()
 
-    # def export_simulation_with_sp500_graph(self, portfolio_values, sp500_values, filename="monte_carlo_vs_sp500.png"):
-    #     os.makedirs("graphs", exist_ok=True)
-    #     filepath = os.path.join("graphs", filename)
 
-    #     # Aggregate portfolio values across simulations to get total portfolio value per time step
-    #     total_portfolio_values = portfolio_values.sum(axis=2)  # Sum across assets
-    #     avg_values = total_portfolio_values.mean(axis=1)  # Average across simulations
-    #     min_values = total_portfolio_values.min(axis=1)  # Minimum across simulations
-    #     max_values = total_portfolio_values.max(axis=1)  # Maximum across simulations
-
-    #     # Create figure
-    #     plt.figure(figsize=(12, 8))
-        
-    #     # Plot the average portfolio value
-    #     plt.plot(avg_values, color='blue', linewidth=2, label='Portfolio Avg. Value')
-        
-    #     # Shaded area for portfolio value range
-    #     plt.fill_between(
-    #         range(len(avg_values)),
-    #         min_values,
-    #         max_values,
-    #         color='blue',
-    #         alpha=0.2,
-    #         label='Portfolio Value Range'
-    #     )
-
-    #     # Plot S&P 500 performance
-    #     plt.plot(sp500_values, color='green', linestyle='--', linewidth=2, label='S&P 500 Performance')
-
-    #     # Add title and labels
-    #     plt.title('Monte Carlo Simulation vs S&P 500 Performance', fontsize=16, fontweight='bold')
-    #     plt.xlabel('Days', fontsize=14)
-    #     plt.ylabel('Portfolio Value', fontsize=14)
-    #     plt.xticks(fontsize=12)
-    #     plt.yticks(fontsize=12)
-
-    #     # Add grid for better readability
-    #     plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
-
-    #     # Add legend
-    #     plt.legend(fontsize=12, loc='upper left', frameon=True)
-
-    #     # Save the figure
-    #     plt.savefig(filepath)
-    #     print(f"Simulation graph with S&P 500 saved as {filepath}")
-    #     plt.show()
     def export_simulation_with_sp500_graph(self, portfolio_values, sp500_values, filename="monte_carlo_vs_sp500.png"):
-        import os
-        import matplotlib.pyplot as plt
+        # import os
+        # import numpy as np
+        # import matplotlib.pyplot as plt
 
         os.makedirs("graphs", exist_ok=True)
         filepath = os.path.join("graphs", filename)
 
         # Aggregate portfolio values across simulations to get total portfolio value per time step
-        total_portfolio_values = portfolio_values.sum(axis=2)
-        avg_values = total_portfolio_values.mean(axis=1)
-        min_values = total_portfolio_values.min(axis=1)
-        max_values = total_portfolio_values.max(axis=1)
+        total_portfolio_values = np.sum(portfolio_values, axis=2)
+        avg_values = np.mean(total_portfolio_values, axis=1)
+        min_values = np.min(total_portfolio_values, axis=1)
+        max_values = np.max(total_portfolio_values, axis=1)
+
+        sp500_cumulative = self.initial_investment * np.cumprod(1 + sp500_values)
 
         time_horizon = len(avg_values)
-        if len(sp500_values) != time_horizon:
+        if len(sp500_cumulative) != time_horizon:
             raise ValueError("Length of S&P 500 values does not match time horizon.")
         
         plt.figure(figsize=(12, 8))
-        plt.plot(avg_values, color='blue', label='Portfolio Avg. Value')
+        plt.plot(avg_values, color='blue', label='Portfolio Avg. Value', linewidth=1.5)
 
         plt.fill_between(
             range(time_horizon),
@@ -542,9 +500,9 @@ class MonteCarloSimulator:
             label='Portfolio Value Range'
         )
 
-        plt.plot(sp500_values, color='green', linestyle='--', label='S&P 500 Performance')
+        plt.plot(sp500_cumulative, color='green', linestyle='--', label='S&P 500 Performance')
 
-        plt.title('Monte Carlo Simulation vs S&P 500 Performance')
+        plt.title('Monte Carlo Simulation vs S&P 500 Performance', fontsize=16, fontweight='bold')
         plt.xlabel('Days', fontsize=12)
         plt.ylabel('Portfolio Value', fontsize=12)
         plt.xticks(fontsize=10)
